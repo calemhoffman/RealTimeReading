@@ -22,7 +22,7 @@
 
 #include "TMath.h"
 
-#define MaxNChannels 8
+#define MaxNChannels 16
 #define MaxDataAShot 100000 /// also limited by Timing, channel, energy pointer initialization.
 
 using namespace std;
@@ -314,7 +314,7 @@ Digitizer::Digitizer(int ID, uint32_t ChannelMask, string expName){
   memset(&DPPParams, 0, sizeof(CAEN_DGTZ_DPP_PHA_Params_t));
 
   ///----------------- Communication Parameters
-  LinkType = CAEN_DGTZ_USB;     /// Link Type
+  LinkType = CAEN_DGTZ_OpticalLink;//CAEN_DGTZ_USB;     /// Link Type
   VMEBaseAddress = 0;           /// For direct USB connection, VMEBaseAddress must be 0
   IOlev = CAEN_DGTZ_IOLevel_NIM;
 

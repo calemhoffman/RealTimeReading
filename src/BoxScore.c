@@ -61,7 +61,7 @@
 
 using namespace std;
 
-#define MaxNChannels 8
+#define MaxNChannels 16
 
 //========== General setting , there are the most general setting that should be OK for all experiment.
 int updatePeriod = 1000; ///Table, tree, Plots update period in mili-sec.
