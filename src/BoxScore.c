@@ -215,25 +215,6 @@ int main(int argc, char *argv[]){
     gp->SetChannelMask(0,0,1,0,0,1,0,0);
     gp->SetdEEChannels(2, 5);
     gp->SetNChannelForRealEvent(2);
-  }else if ( location == "XY" ) {
-    gp = new HeliosTarget();
-  }else if ( location == "iso" ) {
-  //  gp = new IsoDetect();
-  }else if ( location == "IonCh"){
-    gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,1,0,0,0,0);
-    gp->SetdEEChannels(4, 7);
-    gp->SetNChannelForRealEvent(2);
-  }else if ( location == "array" ){
-    gp = new HelioArray();
-  }else if ( location == "MCP"){
-    gp = new MicroChannelPlate();
-  }else if ( location == "music" ) {
-    gp = new GenericPlane();
-    gp->SetChannelMask(1,0,1,0,0,1,0,0);
-    gp->SetdEEChannels(2, 5);
-    gp->SetTChannels(7);
-    gp->SetNChannelForRealEvent(2);
   }else{
     printf(" no such plane. exit. \n");
     return 0;
@@ -797,18 +778,9 @@ if( c == 'w'){ ////========== wave form mode
       }
 
       printf(" Rate( all) :%7.2f pps\n", totalRate);
-      if( totalRate >= 0.)gp->FillRateGraph((CurrentTime - StartTime)/1e3, totalRate);
+      //if( totalRate >= 0.)gp->FillRateGraph((CurrentTime - StartTime)/1e3, totalRate);
       WriteToDataBase(expName, "totalRate", tag, totalRate);
 
-
-      /// for isomer
-      if( gp->GetClassID() == 2 ) {
-        WriteToDataBase( expName, "G1", tag, gp->GetG1Count()/timeRangeSec);
-        WriteToDataBase( expName, "G2", tag, gp->GetG2Count()/timeRangeSec);
-        WriteToDataBase( expName, "G3", tag, gp->GetG3Count()/timeRangeSec);
-        WriteToDataBase( expName, "G4", tag, gp->GetG4Count()/timeRangeSec);
-        gp->SetCountZero();
-      }
 
       if(gp->IsCutFileOpen()){
         for( int i = 0 ; i < gp->GetNumCut(); i++ ){
@@ -820,7 +792,7 @@ if( c == 'w'){ ////========== wave form mode
       }
 
       //============ Draw histogram
-      gp->Draw();
+      //gp->Draw();
 
       dig.ClearData();
 

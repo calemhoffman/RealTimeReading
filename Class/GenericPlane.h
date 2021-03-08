@@ -256,11 +256,11 @@ GenericPlane::GenericPlane(){
 
   NChannelForRealEvent = 8;  /// this is the number of channel for a real event;
 
-  fCanvas = new TCanvas("fCanvas", "testing", 0, 0, 1200, 600);
-  gStyle->SetOptStat("neiou");
-
-  if( fCanvas->GetShowEditor() ) fCanvas->ToggleEditor();
-  if( fCanvas->GetShowToolBar() ) fCanvas->ToggleToolBar();
+  // fCanvas = new TCanvas("fCanvas", "testing", 0, 0, 1200, 600);
+  // gStyle->SetOptStat("neiou");
+  //
+  // if( fCanvas->GetShowEditor() ) fCanvas->ToggleEditor();
+  // if( fCanvas->GetShowToolBar() ) fCanvas->ToggleToolBar();
 
   chdE = 2;  chdEGain = 1;
   chE = 5;   chEGain = 1;
@@ -455,15 +455,15 @@ void GenericPlane::SetGenericHistograms(){
 }
 
 void GenericPlane::SetCanvasTitleDivision(TString titleExtra = ""){
-  fCanvas->Clear();
-  fCanvas->SetTitle(titleExtra);
-  fCanvas->Divide(2,2); //divides
-  fCanvas->cd(2)->Divide(1,2);
-  fCanvas->cd(4)->Divide(1,2);
-
-  fCanvas->cd(1)->SetLogz();//hdEE
-  fCanvas->cd(3)->SetLogz();//hdEtotE
-  fCanvas->cd(4)->cd(1)->SetLogy(); //hTDiff
+  // fCanvas->Clear();
+  // fCanvas->SetTitle(titleExtra);
+  // fCanvas->Divide(2,2); //divides
+  // fCanvas->cd(2)->Divide(1,2);
+  // fCanvas->cd(4)->Divide(1,2);
+  //
+  // fCanvas->cd(1)->SetLogz();//hdEE
+  // fCanvas->cd(3)->SetLogz();//hdEtotE
+  // fCanvas->cd(4)->cd(1)->SetLogy(); //hTDiff
 }
 
 void GenericPlane::Fill(UInt_t dE, UInt_t E){
@@ -550,35 +550,35 @@ void GenericPlane::Draw(){
   if ( !isHistogramSet ) return;
 
 //hdEE and cutsFile
-  fCanvas->cd(1); hdEE->Draw("colz");
+  // fCanvas->cd(1); hdEE->Draw("colz");
   if( numCut > 0 ){
     for( int i = 0; i < numCut; i++){
       cutG = (TCutG *) cutList->At(i);
-      cutG->Draw("same");
+      // cutG->Draw("same");
     }
   }
 
   //hdEtotE
-  //~ fCanvas->cd(3); hdEtotE->Draw("colz");
-  //hdEdT instead
-  fCanvas->cd(3); hdEdT->Draw("colz");
-
-  //hE & hdE
-  fCanvas->cd(2)->cd(1); hdE->Draw();
-  fCanvas->cd(2)->cd(2); hE->Draw();
-
-  //TDiff
-  fCanvas->cd(4)->cd(1); hTDiff->Draw(); line->Draw();
-
-
-  //rateGraph
-  fCanvas->cd(4)->cd(2);
-  htotE->Draw();
-  //~ rateGraph->Draw("AP"); legend->Draw();
-  //~ hdT->Draw(); ///
-
-  fCanvas->Modified();
-  fCanvas->Update();
+  // //~ fCanvas->cd(3); hdEtotE->Draw("colz");
+  // //hdEdT instead
+  // fCanvas->cd(3); hdEdT->Draw("colz");
+  //
+  // //hE & hdE
+  // fCanvas->cd(2)->cd(1); hdE->Draw();
+  // fCanvas->cd(2)->cd(2); hE->Draw();
+  //
+  // //TDiff
+  // fCanvas->cd(4)->cd(1); hTDiff->Draw(); line->Draw();
+  //
+  //
+  // //rateGraph
+  // fCanvas->cd(4)->cd(2);
+  // htotE->Draw();
+  // //~ rateGraph->Draw("AP"); legend->Draw();
+  // //~ hdT->Draw(); ///
+  //
+  // fCanvas->Modified();
+  // fCanvas->Update();
   gSystem->ProcessEvents();
 }
 
@@ -722,7 +722,7 @@ void GenericPlane::LoadCuts(TString cutFileName){
 
 void GenericPlane::SetWaveCanvas(int length){
 
-   fCanvas->Clear();
+   // fCanvas->Clear();
 
     int divX  = (nChannel+1)/2 ;
     int divY = 2;
@@ -732,20 +732,20 @@ void GenericPlane::SetWaveCanvas(int length){
     for( int i = 0; i < length; i++) xVal[i] = i*2;
     std::fill_n(yVal, length, 0);
 
-    fCanvas->Divide(divX,divY);
+    // fCanvas->Divide(divX,divY);
     for( int i = 1; i <= divX * divY ; i++){
-       fCanvas->cd(i)->SetGridy();
-       fCanvas->cd(i)->SetGridx();
+       // fCanvas->cd(i)->SetGridy();
+       // fCanvas->cd(i)->SetGridx();
        for(int j = 0; j < length ; j++) {
           waveForm1[i-1]->SetPoint(j, j, 0);
        }
        waveForm1[i-1]->GetYaxis()->SetRangeUser(-1000, 17000);
        waveForm1[i-1]->GetXaxis()->SetRangeUser(0, length);
-       waveForm1[i-1]->Draw("AP");
+       // waveForm1[i-1]->Draw("AP");
     }
 
-   fCanvas->Modified();
-   fCanvas->Update();
+   // fCanvas->Modified();
+   // fCanvas->Update();
    gSystem->ProcessEvents();
 
 }
@@ -851,13 +851,13 @@ void GenericPlane::DrawWaves(){
   for( int ch = 0 ; ch < 8; ch ++){
     if (!(ChannelMask & (1<<ch))) continue;
     padID ++;
-    fCanvas->cd(padID);
-    if( waveForm1[ch]->GetN() > 0 ) waveForm1[ch]->Draw("AP");
-    if( waveForm2[ch]->GetN() > 0 ) waveForm2[ch]->Draw("same");
+    // fCanvas->cd(padID);
+    // if( waveForm1[ch]->GetN() > 0 ) waveForm1[ch]->Draw("AP");
+    // if( waveForm2[ch]->GetN() > 0 ) waveForm2[ch]->Draw("same");
     ///if( digitForm[ch]->GetN() > 0 ) digitForm[ch]->Draw("same"); not working??
     ///if( trapezoid[ch]->GetN() > 0 ) trapezoid[ch]->Draw("same");
   }
-  fCanvas->Update();
+  // fCanvas->Update();
   gSystem->ProcessEvents();
 }
 
