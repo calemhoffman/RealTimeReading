@@ -118,10 +118,10 @@ void paintCanvas(){
   ///This function is running in a parrellel thread.
   ///This continously update the Root system with user input
   ///avoid frozen
-  do{
-    gSystem->ProcessEvents();
-    sleep(0.01); /// 10 mili-sec
-  }while(!QuitFlag);
+  // do{
+  //   gSystem->ProcessEvents();
+  //   sleep(0.01); /// 10 mili-sec
+  // }while(!QuitFlag);
 }
 
 /* ########################################################################### */
@@ -297,7 +297,7 @@ int main(int argc, char *argv[]){
     ///rawFile->SetTree("rawTree", 1);
   ///}
 
-  thread paintCanvasThread(paintCanvas); /// using thread and loop keep Canvas responding
+  /// thread paintCanvasThread(paintCanvas); /// using thread and loop keep Canvas responding
 
   /* *************************************************************************************** */
   /* Readout Loop                                                                            */
@@ -832,7 +832,7 @@ if( c == 'w'){ ////========== wave form mode
   file.WriteHistogram(gp->GetRateGraph(), "rateGraph");
   file.Close();
 
-  paintCanvasThread.detach();
+  //paintCanvasThread.detach();
 
   printf("========== bye bye =========== \n");
 
