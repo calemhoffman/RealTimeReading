@@ -64,7 +64,7 @@ using namespace std;
 #define MaxNChannels 8
 
 //========== General setting , there are the most general setting that should be OK for all experiment.
-int updatePeriod = 1000; ///Table, tree, Plots update period in mili-sec.
+int updatePeriod = 5000; ///Table, tree, Plots update period in mili-sec.
 ///bool isSaveRaw = false;  /// saving Raw data
 bool isDataBaseExist = false;
 string location;
