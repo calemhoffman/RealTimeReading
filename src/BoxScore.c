@@ -64,7 +64,7 @@ using namespace std;
 #define MaxNChannels 8
 
 //========== General setting , there are the most general setting that should be OK for all experiment.
-int updatePeriod = 5000; ///Table, tree, Plots update period in mili-sec.
+int updatePeriod = 1000; ///Table, tree, Plots update period in mili-sec.
 ///bool isSaveRaw = false;  /// saving Raw data
 bool isDataBaseExist = false;
 string location;
@@ -142,11 +142,6 @@ int main(int argc, char *argv[]){
     printf("                         +-- cross (dE = 1 ch, E = 4 ch)\n");
     printf("                         +-- ZD (zero-degree) (dE = 2 ch, E = 5 ch)\n");
     printf("                         +-- XY (Helios target XY) \n");
-    printf("                         +-- iso (isomer with Glover Ge detector) \n");
-    printf("                         +-- IonCh (IonChamber) (dE = 4 ch, E = 7 ch) \n");
-    printf("                         +-- array (single Helios array) \n");
-    printf("                         +-- MCP (Micro Channel Plate) \n");
-    printf("                         +-- music (MUSIC at SPS) \n");
     return -1;
   }
 
@@ -220,6 +215,8 @@ int main(int argc, char *argv[]){
     gp->SetChannelMask(0,0,1,0,0,1,0,0);
     gp->SetdEEChannels(2, 5);
     gp->SetNChannelForRealEvent(2);
+  }else if ( location == "XY" ) {
+    gp = new HeliosTarget();
   }else{
     printf(" no such plane. exit. \n");
     return 0;
