@@ -196,20 +196,20 @@ int main(int argc, char *argv[]){
     rootFileName = "test.root";
   }else if( location == "exit") {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,0,1,0,0,1);
-    gp->SetdEEChannels(0, 3);
+    gp->SetChannelMask(0,0,0,0,1,0,1,0);
+    gp->SetdEEChannels(1, 3);
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "cross" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,1,0,0,1,0);
-    gp->SetdEEChannels(1, 4);
+    gp->SetChannelMask(0,0,0,0,1,0,1,0);
+    gp->SetdEEChannels(1, 3);
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "crosstime" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,1,0,0,1,0);
-    gp->SetdEEChannels(1, 4);
+    gp->SetChannelMask(1,0,0,0,0,1,0,1);
+    gp->SetdEEChannels(0, 2);
     gp->SetTChannels(7);
-    gp->SetNChannelForRealEvent(2);
+    gp->SetNChannelForRealEvent(3);
   }else if ( location == "ZD" ) {
     gp = new GenericPlane();
     gp->SetChannelMask(0,0,1,0,0,1,0,0);
@@ -217,6 +217,7 @@ int main(int argc, char *argv[]){
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "XY" ) {
     gp = new HeliosTarget();
+    updatePeriod = 5000;
   }else{
     printf(" no such plane. exit. \n");
     return 0;

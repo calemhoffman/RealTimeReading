@@ -55,7 +55,7 @@ HeliosTarget::HeliosTarget(){
   rangeTime =    500; /// range for Tdiff, nano-sec
   
   //chdE = 1;  chdEGain = 0; 
-  chE = 1;   chEGain = 1.0;
+  chE = 7;   chEGain = 1.0;
   mode = 5; ///default channel Gain is equal
   
   NChannelForRealEvent = 5;
@@ -82,7 +82,7 @@ HeliosTarget::HeliosTarget(){
   chY1 = 2;
   chY2 = 6;
   
-  GenericPlane::SetChannelMask(0,1,0,1,0,1,0,1);
+  GenericPlane::SetChannelMask(1,1,0,1,0,1,0,1);
   
 }
 
