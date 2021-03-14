@@ -133,9 +133,7 @@ int main(int argc, char *argv[]){
     printf("usage:\n");
     printf("                + use DetectDigitizer   \n");
     printf("                |\n");
-    printf("                |                + setting folder, database name \n");
-    printf("                |                |\n");
-    printf("$./BoxScore  boardID location expName (tree.root) (debug)\n");
+    printf("$./BoxScore  boardID location (tree.root) (debug)\n");
     printf("                         | \n");
     printf("                         +-- testing (all ch)\n");
     printf("                         +-- exit (dE = 0 ch, E = 3 ch)\n");
@@ -153,12 +151,12 @@ int main(int argc, char *argv[]){
   const int boardID = atoi(argv[1]);
   string location = argv[2];
 
-  string expName = argv[3];
+  string expName = "db";//argv[3];
 
   TString rootFileName;
-  if( argc >= 5 ) rootFileName = argv[4];
+  if( argc >= 4 ) rootFileName = argv[3];
   bool isDebug= false;
-  if( argc >= 6 ) isDebug = atoi(argv[5]);
+  if( argc >= 5 ) isDebug = atoi(argv[4]);
 
   char hostname[100];
   gethostname(hostname, 100);
@@ -179,7 +177,7 @@ int main(int argc, char *argv[]){
   int secound = ltm->tm_sec;
 
   ///==== default root file name based on datetime and plane
-  if( argc == 4 ) rootFileName.Form("%4d%02d%02d_%02d%02d%02d%s.root", year, month, day, hour, minute, secound, location.c_str());
+  if( argc == 3 ) rootFileName.Form("%4d%02d%02d_%02d%02d%02d%s.root", year, month, day, hour, minute, secound, location.c_str());
 
   TApplication app ("app", &argc, argv); /// this must be before Plane class, and this would change argc and argv value;
 
@@ -233,7 +231,7 @@ int main(int argc, char *argv[]){
   printf("   Location :\e[33m %s \e[0m\n", location.c_str() );
   printf("      Class :\e[33m %s \e[0m\n", gp->GetClassName().c_str() );
   printf("    save to : %s \n", rootFileName.Data() );
-  printf("   Exp Name :\e[33m %s \e[0m, same as database name \n", expName.c_str());
+ // printf("   Exp Name :\e[33m %s \e[0m, same as database name \n", expName.c_str());
 
   /* *************************************************************************************** */
   /* Canvas and Digitzer                                                                               */
@@ -274,7 +272,7 @@ int main(int argc, char *argv[]){
   /* ROOT TREE                                                                               */
   /* *************************************************************************************** */
 
-  string folder = "setting/" +  expName;
+  string folder = "setting/";
   FileIO file(rootFileName);
 
   ///==== Save setting into the root file
