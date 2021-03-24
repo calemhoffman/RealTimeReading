@@ -45,10 +45,10 @@
 #include "../Class/DigitizerClass.h"
 #include "../Class/FileIO.h"
 #include "../Class/GenericPlane.h"
-#include "../Class/HelioTarget.h"
+//#include "../Class/HelioTarget.h"
 //#include "../Class/IsoDetect.h"
-#include "../Class/HelioArray.h"
-#include "../Class/MCPClass.h"
+//#include "../Class/HelioArray.h"
+//#include "../Class/MCPClass.h"
 
 using namespace std;
 
@@ -124,15 +124,7 @@ int main(int argc, char *argv[]){
     printf("$./BoxScore  boardID location (tree.root) (debug)\n");
     printf("                        | \n");
     printf("                        +-- testing (all ch)\n");
-    printf("                        +-- exit \n");
-    printf("                        +-- cross \n");
-    printf("                        +-- crosstime \n");
-    printf("                        +-- ZD (zero-degree) \n");
-    printf("                        +-- XY \n");
-    printf("                        +-- XYede (XY de-e only) \n");
-    printf("                        +-- XYpos (X,Y 1-D only) \n");
-    printf("                        +-- IonCh (IonChamber)  \n");
-    printf("                        +-- MCP (Micro Channel Plate) \n");
+    printf("                        +-- testingOne (single ch) \n");
     return -1;
   }
 
@@ -181,56 +173,20 @@ int main(int argc, char *argv[]){
   ///------Initialize the ChannelMask and histogram setting
   if( location == "testing") {
     gp = new GenericPlane();
-    gp->SetChannelMask(1,1,1,1,1,1,1,1);
+    gp->SetChannelMask(1,1,1,1,1,1,1,1,
+						1,1,1,1,1,1,1,1);
     printf(" testing ### dE = ch-0, E = ch-4 \n");
     printf(" testing ### output file is test.root \n");
-    gp->SetdEEChannels(0, 4);
+    gp->SetdEEChannels(11, 4);
     rootFileName = "test.root";
-  }else if( location == "exit") {
+  }else if( location == "testingOne") {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,0,1,0,1,0);
-    gp->SetdEEChannels(1, 3);
-    gp->SetNChannelForRealEvent(2);
-  }else if ( location == "cross" ) {
-    gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,0,1,0,1,0);
-    gp->SetdEEChannels(1, 3);
-    gp->SetNChannelForRealEvent(2);
-  }else if ( location == "crosstime" ) {
-    gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,0,1,0,1,0);
-    gp->SetdEEChannels(1, 3);
-    gp->SetTChannels(7);
-    gp->SetNChannelForRealEvent(3);
-  }else if ( location == "ZD" ) {
-    gp = new GenericPlane();
-    gp->SetChannelMask(0,0,1,0,0,1,0,0);
-    gp->SetdEEChannels(2, 5);
-    gp->SetNChannelForRealEvent(2);
-  }else if ( location == "XY" ) {
-    gp = new HeliosTarget();
-    gp->SetNChannelForRealEvent(5);
-    updatePeriod=5000;
-  }else if ( location == "XYede" ) {
-    gp = new HeliosTarget();
-    gp->SetCanvasID(1);
-    gp->SetChannelMask(1,0,0,0,0,1,0,1);
-    gp->SetNChannelForRealEvent(3);
-    updatePeriod=1000;
-  }else if ( location == "XYpos" ) {
-    gp = new HeliosTarget();
-    gp->SetCanvasID(2);
-    gp->SetChannelMask(1,1,0,1,0,1,0,1);
-    gp->SetNChannelForRealEvent(5);
-    updatePeriod=5000;
-  }else if ( location == "IonCh"){
-    gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,1,0,0,0,0);
-    gp->SetdEEChannels(4, 7);
-    gp->SetNChannelForRealEvent(2);
-  }else if ( location == "MCP"){
-    gp = new MicroChannelPlate();
-  }else{
+    gp->SetChannelMask(0,0,0,0,1,0,0,0,
+						0,0,0,0,0,0,0,0);
+    printf(" testing ### dE = ch-11\n");
+    printf(" testing ### output file is test.root \n");
+    rootFileName = "test.root";
+  } else {
     printf(" no such plane. exit. \n");
     return 0;
   }

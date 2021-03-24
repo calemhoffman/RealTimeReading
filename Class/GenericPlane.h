@@ -25,7 +25,7 @@
 
 #include <thread>
 
-#define numChannel 8
+#define numChannel 16
 
 using namespace std;
 
@@ -35,7 +35,8 @@ public:
   GenericPlane();
   ~GenericPlane();
 
-  void         SetChannelMask(bool ch7, bool ch6, bool ch5, bool ch4, bool ch3, bool ch2, bool ch1, bool ch0);
+  void         SetChannelMask(bool ch15, bool ch14, bool ch13, bool ch12, bool ch11, bool ch10, bool ch9, bool ch8,
+							bool ch7, bool ch6, bool ch5, bool ch4, bool ch3, bool ch2, bool ch1, bool ch0);
   void         SetChannelMask(uint32_t mask)       {ChannelMask = mask;}
   void         SetLocation(string loc)             {location = loc;}        ///kind of redanance?
   virtual void SetdEEChannels( int chdE, int chE)  {this->chE = chE; this->chdE = chdE; }
@@ -327,7 +328,8 @@ GenericPlane::GenericPlane(){
 
 }
 
-void GenericPlane::SetChannelMask(bool ch7, bool ch6, bool ch5, bool ch4, bool ch3, bool ch2, bool ch1, bool ch0){
+void GenericPlane::SetChannelMask(bool ch15, bool ch14, bool ch13, bool ch12, bool ch11, bool ch10, bool ch9, bool ch8,
+bool ch7, bool ch6, bool ch5, bool ch4, bool ch3, bool ch2, bool ch1, bool ch0){
 
   uint32_t mask = 0;
   nChannel = 0;
@@ -340,6 +342,14 @@ void GenericPlane::SetChannelMask(bool ch7, bool ch6, bool ch5, bool ch4, bool c
   if( ch5 ) {mask +=  32; nChannel ++;}
   if( ch6 ) {mask +=  64; nChannel ++;}
   if( ch7 ) {mask += 128; nChannel ++;}
+  if( ch8 ) {mask += 256; nChannel ++;}
+  if( ch9 ) {mask += 512; nChannel ++;}
+  if( ch10 ) {mask += 1024; nChannel ++;}
+  if( ch11 ) {mask += 2048; nChannel ++;}
+  if( ch12 ) {mask += 4096; nChannel ++;}
+  if( ch13 ) {mask += 8192; nChannel ++;}
+  if( ch14 ) {mask += 16384; nChannel ++;}
+  if( ch15 ) {mask += 32768; nChannel ++;}
 
   ChannelMask = mask;
 
