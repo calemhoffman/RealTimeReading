@@ -2,18 +2,9 @@
 *  This program is built upon the sample from CAEN. The use of CERN/ROOT
 *  Library is written by myself.
 *
-*
 *  Tsz Leung (Ryan) TANG, Oct 1st, 2019
 *  ttang@anl.gov
 ******************************************************************************/
-
-//TODO loading setting for detector (save as some files?)
-//TODO write waveForm into File
-//TODO push signal channel to Grafana
-//TODO waveform display, polarity seems reverse.
-//TODO digitizer output array of channel setting, feed to GenericPlan, trapezoidal filter
-//TODO more online control of the digitizer.
-//TODO FULL GUI? Qt? EPICS+EDM?
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,9 +100,6 @@ void PrintTrapezoidCommands(){
   printf("t) flat-top [ns]        b) base line end time [ns]\n");
   printf("f) decay time[ns]       u) set probe type\n");
   printf("------------------------------------------------------------\n");
-  ///printf("s ) Start acquisition  \n");
-  ///printf("a ) Stop acquisition   \n");
-  ///printf("d ) List Mode           p ) Print Channel setting\n");
 }
 
 void paintCanvas(){
@@ -133,20 +121,18 @@ int main(int argc, char *argv[]){
     printf("usage:\n");
     printf("                + use DetectDigitizer   \n");
     printf("                |\n");
-    printf("                |                + setting folder, database name \n");
-    printf("                |                |\n");
-    printf("$./BoxScore  boardID location expName (tree.root) (debug)\n");
-    printf("                         | \n");
-    printf("                         +-- testing (all ch)\n");
-    printf("                         +-- exit (dE = 0 ch, E = 3 ch)\n");
-    printf("                         +-- cross (dE = 1 ch, E = 4 ch)\n");
-    printf("                         +-- ZD (zero-degree) (dE = 2 ch, E = 5 ch)\n");
-    printf("                         +-- XY (Helios target XY) \n");
-    printf("                         +-- iso (isomer with Glover Ge detector) \n");
-    printf("                         +-- IonCh (IonChamber) (dE = 4 ch, E = 7 ch) \n");
-    printf("                         +-- array (single Helios array) \n");
-    printf("                         +-- MCP (Micro Channel Plate) \n");
-    printf("                         +-- music (MUSIC at SPS) \n");
+    printf("$./BoxScore  boardID location (tree.root) (debug)\n");
+    printf("                        | \n");
+    printf("                        +-- testing (all ch)\n");
+    printf("                        +-- exit \n");
+    printf("                        +-- cross \n");
+    printf("                        +-- crosstime \n");
+    printf("                        +-- ZD (zero-degree) \n");
+    printf("                        +-- XY \n");
+    printf("                        +-- XYede (XY de-e only) \n");
+    printf("                        +-- XYpos (X,Y 1-D only) \n");
+    printf("                        +-- IonCh (IonChamber)  \n");
+    printf("                        +-- MCP (Micro Channel Plate) \n");
     return -1;
   }
 
@@ -158,12 +144,13 @@ int main(int argc, char *argv[]){
   const int boardID = atoi(argv[1]);
   string location = argv[2];
 
-  string expName = argv[3];
+  //string expName = argv[3];
+  string dbName = "db";
 
   TString rootFileName;
-  if( argc >= 5 ) rootFileName = argv[4];
+  if( argc >= 4 ) rootFileName = argv[3];
   bool isDebug= false;
-  if( argc >= 6 ) isDebug = atoi(argv[5]);
+  if( argc >= 5 ) isDebug = atoi(argv[4]);
 
   char hostname[100];
   gethostname(hostname, 100);
@@ -184,7 +171,7 @@ int main(int argc, char *argv[]){
   int secound = ltm->tm_sec;
 
   ///==== default root file name based on datetime and plane
-  if( argc == 4 ) rootFileName.Form("%4d%02d%02d_%02d%02d%02d%s.root", year, month, day, hour, minute, secound, location.c_str());
+  if( argc == 3 ) rootFileName.Form("%4d%02d%02d_%02d%02d%02d%s.root", year, month, day, hour, minute, secound, location.c_str());
 
   TApplication app ("app", &argc, argv); /// this must be before Plane class, and this would change argc and argv value;
 
@@ -201,15 +188,20 @@ int main(int argc, char *argv[]){
     rootFileName = "test.root";
   }else if( location == "exit") {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,0,1,0,0,1);
-    gp->SetdEEChannels(0, 3);
+    gp->SetChannelMask(0,0,0,0,1,0,1,0);
+    gp->SetdEEChannels(1, 3);
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "cross" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,1,0,0,1,0);
-    gp->SetdEEChannels(1, 4);
-    gp->SetTChannels(7);
+    gp->SetChannelMask(0,0,0,0,1,0,1,0);
+    gp->SetdEEChannels(1, 3);
     gp->SetNChannelForRealEvent(2);
+  }else if ( location == "crosstime" ) {
+    gp = new GenericPlane();
+    gp->SetChannelMask(1,0,0,0,1,0,1,0);
+    gp->SetdEEChannels(1, 3);
+    gp->SetTChannels(7);
+    gp->SetNChannelForRealEvent(3);
   }else if ( location == "ZD" ) {
     gp = new GenericPlane();
     gp->SetChannelMask(0,0,1,0,0,1,0,0);
@@ -217,27 +209,34 @@ int main(int argc, char *argv[]){
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "XY" ) {
     gp = new HeliosTarget();
-  }else if ( location == "iso" ) {
-  //  gp = new IsoDetect();
+    gp->SetNChannelForRealEvent(5);
+    updatePeriod=5000;
+  }else if ( location == "XYede" ) {
+    gp = new HeliosTarget();
+    gp->SetCanvasID(1);
+    gp->SetChannelMask(1,0,0,0,0,1,0,1);
+    gp->SetNChannelForRealEvent(3);
+    updatePeriod=1000;
+  }else if ( location == "XYpos" ) {
+    gp = new HeliosTarget();
+    gp->SetCanvasID(2);
+    gp->SetChannelMask(1,1,0,1,0,1,0,1);
+    gp->SetNChannelForRealEvent(5);
+    updatePeriod=5000;
   }else if ( location == "IonCh"){
     gp = new GenericPlane();
     gp->SetChannelMask(1,0,0,1,0,0,0,0);
     gp->SetdEEChannels(4, 7);
     gp->SetNChannelForRealEvent(2);
-  }else if ( location == "array" ){
-    gp = new HelioArray();
   }else if ( location == "MCP"){
     gp = new MicroChannelPlate();
-  }else if ( location == "music" ) {
-    gp = new GenericPlane();
-    gp->SetChannelMask(1,0,1,0,0,1,0,0);
-    gp->SetdEEChannels(2, 5);
-    gp->SetTChannels(7);
-    gp->SetNChannelForRealEvent(2);
   }else{
     printf(" no such plane. exit. \n");
     return 0;
   }
+
+//pull from FileIO not dig...
+  string expName = "infl21";
 
   printf("******************************************** \n");
   printf("****          BoxScoreXY                **** \n");
@@ -249,8 +248,9 @@ int main(int argc, char *argv[]){
   printf("   Location :\e[33m %s \e[0m\n", location.c_str() );
   printf("      Class :\e[33m %s \e[0m\n", gp->GetClassName().c_str() );
   printf("    save to : %s \n", rootFileName.Data() );
-  printf("   Exp Name :\e[33m %s \e[0m, same as database name \n", expName.c_str());
-
+  printf("   Exp Name :\e[33m %s \e[0m, NOT same as database name \n", expName.c_str());
+  printf("   DataBase Name :\e[33m RAISOR_%s \e[0m\n", dbName.c_str());
+ 
   /* *************************************************************************************** */
   /* Canvas and Digitzer                                                                               */
   /* *************************************************************************************** */
@@ -259,7 +259,6 @@ int main(int argc, char *argv[]){
 
   Digitizer dig(boardID, ChannelMask, expName);
   if( !dig.IsConnected() ) return -1;
-
   string tag = "tag=" + location; //tag for database
 
   gp->SetCanvasTitleDivision(location + " | " + rootFileName);
@@ -267,11 +266,14 @@ int main(int argc, char *argv[]){
   gp->SetCoincidentTimeWindow(dig.GetCoincidentTimeWindow());
   gp->SetChannelsPlotRange(dig.GetChannelsPlotRange());
   gp->SetGenericHistograms(); ///must be after SetChannelGain
+  
+  
+
 
   /* DB push of general settings info */
-  WriteToDataBase(expName, "ExpNumber", "tag=general", (float)dig.GetExpNumber());
-  WriteToDataBaseString(expName, "Location", "tag=general", location);
-  WriteToDataBaseString(expName, "PrimBeam", "tag=general", dig.GetPrimBeam());
+  WriteToDataBase(dbName, "ExpNumber", "tag=general", (float)dig.GetExpNumber());
+  WriteToDataBaseString(dbName, "Location", "tag=general", location);
+  WriteToDataBaseString(dbName, "PrimBeam", "tag=general", dig.GetPrimBeam());
 
   for( int ch = 0; ch < MaxNChannels ; ch++){
     gp->SetRiseTime(ch, dig.GetChannelRiseTime(ch));
@@ -290,7 +292,7 @@ int main(int argc, char *argv[]){
   /* ROOT TREE                                                                               */
   /* *************************************************************************************** */
 
-  string folder = "setting/" +  expName;
+  string folder = "setting/";/// +  expName;
   FileIO file(rootFileName);
 
   ///==== Save setting into the root file
@@ -311,7 +313,7 @@ int main(int argc, char *argv[]){
     ///rawFile->SetTree("rawTree", 1);
   ///}
 
-  thread paintCanvasThread(paintCanvas); /// using thread and loop keep Canvas responding
+ // thread paintCanvasThread(paintCanvas); /// using thread and loop keep Canvas responding
 
   /* *************************************************************************************** */
   /* Readout Loop                                                                            */
@@ -728,6 +730,7 @@ if( c == 'w'){ ////========== wave form mode
 
 
     if (ElapsedTime > updatePeriod && dig.GetAcqMode() == "list") {
+      if (gp->GetCanvasID() == 2) gp->ClearHistograms();
       //======================== Fill TDiff
       for( int i = 0; i < dig.GetNumRawEvent() - 1; i++){
         //~ ULong64_t timeDiff = dig.GetRawTimeStamp(i+1) - dig.GetRawTimeStamp(i);
@@ -768,7 +771,7 @@ if( c == 'w'){ ////========== wave form mode
       printf("Time Elapsed         = %.3f sec = %.1f min\n", (CurrentTime - StartTime)/1e3, (CurrentTime - StartTime)/1e3/60.);
       printf("Built-event save to  : %s \n", rootFileName.Data());
       printf("File size            : %.4f MB \n", fileSize );
-      printf("Database             : %s\n", expName.c_str());
+      printf("Database             : %s\n", dbName.c_str());
 
       printf("\n");
 
@@ -780,7 +783,7 @@ if( c == 'w'){ ////========== wave form mode
 
       for (int ch = 0; ch < MaxNChannels; ch++) {
 	    if (!(ChannelMask & (1<<ch))) continue;
-	    WriteToDataBase(expName, Form("ch%d", ch), tag, dig.GetChannelGet(ch)*1.0/timeRangeSec);
+	    WriteToDataBase(dbName, Form("ch%d", ch), tag, dig.GetChannelGet(ch)*1.0/timeRangeSec);
 	  }
 
       dig.PrintReadStatistic();
@@ -798,24 +801,14 @@ if( c == 'w'){ ////========== wave form mode
 
       printf(" Rate( all) :%7.2f pps\n", totalRate);
       if( totalRate >= 0.)gp->FillRateGraph((CurrentTime - StartTime)/1e3, totalRate);
-      WriteToDataBase(expName, "totalRate", tag, totalRate);
-
-
-      /// for isomer
-      if( gp->GetClassID() == 2 ) {
-        WriteToDataBase( expName, "G1", tag, gp->GetG1Count()/timeRangeSec);
-        WriteToDataBase( expName, "G2", tag, gp->GetG2Count()/timeRangeSec);
-        WriteToDataBase( expName, "G3", tag, gp->GetG3Count()/timeRangeSec);
-        WriteToDataBase( expName, "G4", tag, gp->GetG4Count()/timeRangeSec);
-        gp->SetCountZero();
-      }
+      WriteToDataBase(dbName, "totalRate", tag, totalRate);
 
       if(gp->IsCutFileOpen()){
         for( int i = 0 ; i < gp->GetNumCut(); i++ ){
           double count = gp->GetCountOfCut(i)*1.0/timeRangeSec;
           printf(" Rate(%4s) :%7.2f pps\n", gp->GetCutName(i).Data(), count);
           //----------------- write to database
-          WriteToDataBase(expName, gp->GetCutName(i).Data(), tag, count);
+          WriteToDataBase(dbName, gp->GetCutName(i).Data(), tag, count);
         }
       }
 
@@ -855,7 +848,7 @@ if( c == 'w'){ ////========== wave form mode
   file.WriteHistogram(gp->GetRateGraph(), "rateGraph");
   file.Close();
 
-  paintCanvasThread.detach();
+  //paintCanvasThread.detach();
 
   printf("========== bye bye =========== \n");
 

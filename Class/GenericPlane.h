@@ -46,7 +46,7 @@ public:
   virtual void SetCanvasTitleDivision(TString titleExtra);
   void         SetERange(int x1, int x2)  { rangeE[0] = x1; this->rangeE[1] = x2; };
   void         SetdERange(int x1, int x2) { rangeDE[0] = x1; this->rangeDE[1] = x2; };
-  void         SetNChannelForRealEvent(int n) { NChannelForRealEvent = n;}
+  void         SetNChannelForRealEvent(int n) { NChannelForRealEvent = n;};
   void         SetHistogramsRange();
   void         SetChannelsPlotRange(int ** range);
 
@@ -54,14 +54,14 @@ public:
   virtual void Fill(UInt_t * energy, ULong64_t * times);
   void         FillTimeDiff(float nanoSec){ if( hTDiff == NULL ) return; hTDiff->Fill(nanoSec); }
   void         FillRateGraph(float x, float y);
-  void         FillHit(int * hit){ for( int i = 0; i < 8; i++){ hHit->Fill(i+1, hit[i]);} }
+  void         FillHit(int * hit){ for( int i = 0; i < 8; i++){ hHit->Fill(i+1, hit[i]);} };
 
   void         SetWaveCanvas(int length);
   void         FillWaves1(int* length, int16_t ** wave);
   void         FillWaves2(int* length, int16_t ** wave);
   void         FillDigitWave(int* length, uint8_t ** wave);
   virtual void FillWaveEnergies(double * energy);
-  void         ClearWaveEnergies() { for(int i = 0; i < numChannel; i++) waveEnergy[i] = 0;}
+  void         ClearWaveEnergies() { for(int i = 0; i < numChannel; i++) waveEnergy[i] = 0;};
   void         TrapezoidFilter(int ch, int length, int16_t * wave);
   void         SetRiseTime(int ch, int temp)    { this->riseTime[ch]    = temp;} /// in ch, 1 ch = 2 ns
   void         SetFlatTop(int ch, int temp)     { this->flatTop[ch]     = temp;} /// in ch, 1 ch = 2 ns
@@ -71,6 +71,8 @@ public:
   int          GetFlatTop(int ch)     { return flatTop[ch]; }
   int          GetFallTime(int ch)    { return decayTime[ch]; }
   int          GetBaseLineEnd(int ch) { return baseLineEnd[ch]; }
+  void         SetCanvasID(int id) { this->canID = id; }
+  int          GetCanvasID() { return canID; }
 
   virtual void Draw();
   virtual void DrawWaves();
@@ -143,6 +145,7 @@ protected:
   double rangeTime;  // range for Tdiff, nano-sec
 
   TCanvas *fCanvas;
+///  TCanvas *gCanvas;
 
   TH1F * hE;
   TH1F * hdE;
@@ -172,6 +175,7 @@ protected:
   int flatTop[8]; /// in ch
   int decayTime[8]; /// in ch
   int baseLineEnd[8]; /// in ch
+  int canID=0;//XY canvas
 
   TObjArray * cutList;
   int numCut;
@@ -202,6 +206,7 @@ GenericPlane::~GenericPlane(){
   printf("cleaning up GenericPlane \n");
 
   delete fCanvas;
+///  delete gCanvas;
   delete hE;
   delete hdE;
   delete hdT;
@@ -256,11 +261,14 @@ GenericPlane::GenericPlane(){
 
   NChannelForRealEvent = 8;  /// this is the number of channel for a real event;
 
-  fCanvas = new TCanvas("fCanvas", "testing", 0, 0, 1200, 600);
+  fCanvas = new TCanvas("fCanvas", "Main Canvas (Generic Plane)", 0, 0, 1000, 1000);
   gStyle->SetOptStat("neiou");
-
   if( fCanvas->GetShowEditor() ) fCanvas->ToggleEditor();
   if( fCanvas->GetShowToolBar() ) fCanvas->ToggleToolBar();
+ /// gCanvas = new TCanvas("gCanvas", "testing", 0, 0, 1000, 1000);
+ /// gStyle->SetOptStat("neiou");
+ /// if( gCanvas->GetShowEditor() ) gCanvas->ToggleEditor();
+ /// if( gCanvas->GetShowToolBar() ) gCanvas->ToggleToolBar();
 
   chdE = 2;  chdEGain = 1;
   chE = 5;   chEGain = 1;
@@ -394,12 +402,12 @@ void GenericPlane::SetGenericHistograms(){
   hdE   = new TH1F(  "hdE", Form("raw dE (ch=%d, gain=%.2f) ; dE [ch]; count",
   chdE, chdEGain), histBins, rangeDE[0], rangeDE[1]);
   hdT   = new TH1F(  "hdT", Form("raw dT (ch=%d, gain=%.2f) ; dT [ch]; count",
-  chT, 1.0), 200, -200, 200);
-  htotE = new TH1F("htotE", "total E ; totR [ch]; count",
-  histBins, rangeE[0]+rangeDE[0], rangeE[1]+rangeDE[1]);
-
+  chT, 1.0), 200, 0, 200);
   hdEE  = new TH2F("hdEE", "dE - E ; E [ch]; dE [ch] ",
   histBins, rangeE[0], rangeE[1], histBins, rangeDE[0], rangeDE[1]);
+  
+  htotE = new TH1F("htotE", "total E ; totR [ch]; count",
+  histBins, rangeE[0]+rangeDE[0], rangeE[1]+rangeDE[1]);
   hdEtotE  = new TH2F( "hdEtotE",
   Form("dE vs. totE = %4.2fdE + %4.2fE; totalE [ch]; dE [ch ",
   chdEGain, chEGain ), histBins, rangeDE[0] * chdEGain + rangeE[0]* chEGain,
@@ -409,7 +417,7 @@ void GenericPlane::SetGenericHistograms(){
   hTDiff = new TH1F("hTDiff", "timeDiff [nsec]; time [nsec] ; count", histBins, 0, 2000 /*rangeTime*/);
 
   hdEdT = new TH2F("hdEdT", "dE - TOF; TOF [ns]; dE [ch]",
-  200,-200,200, histBins,rangeDE[0], rangeDE[1]); //rangeT needed
+  200,0,200, histBins,rangeDE[0], rangeDE[1]); //rangeT needed
 
   hE->GetXaxis()->SetLabelSize(labelSize);
   hE->GetXaxis()->SetNdivisions(405);
@@ -463,7 +471,9 @@ void GenericPlane::SetCanvasTitleDivision(TString titleExtra = ""){
 
   fCanvas->cd(1)->SetLogz();//hdEE
   fCanvas->cd(3)->SetLogz();//hdEtotE
-  fCanvas->cd(4)->cd(1)->SetLogy(); //hTDiff
+  fCanvas->cd(4)->cd(2)->SetLogy(); //hTDiff
+  
+ /// gCanvas->Clear();
 }
 
 void GenericPlane::Fill(UInt_t dE, UInt_t E){
@@ -499,18 +509,22 @@ void GenericPlane::Fill(UInt_t * energy, ULong64_t * times){
   //~ printf("T: %1.12f, dET: %1.12f dEdT: %12.12f\n",
   //~ (float)T*chan2ns,(float)dET*chan2ns, dEdT);
 
+//'raw' fills
   hE->Fill(E);
   hdE->Fill(dE);
   hdT->Fill(dEdT);
   hdEE->Fill(E, dE);
-  float totalE = (float)dE * chdEGain + (float)E * chEGain;
-  hdEtotE->Fill(totalE, (float)dE * chdEGain);
-  htotE->Fill(totalE);
   hdEdT->Fill(dEdT, dE);//
 
-  //~ int lower = hE->GetXaxis()->FindBin(4500);
-  //~ int upper =  hE->GetXaxis()->FindBin(5500);
-  //~ int integral = hE->Integral(lower,upper);
+//cal fills  
+  float calE[2] = {1.0,0.0};
+  float totEcal = (float)dE * chdEGain + (float)E * chEGain;
+  totEcal = calE[0]*totEcal + calE[1];
+  float dEcal = (float)dE * chdEGain;
+  dEcal = calE[0]*dEcal + calE[1];
+  
+  hdEtotE->Fill(totEcal, dEcal);
+  htotE->Fill(totEcal);
 
   if( numCut > 0  ){
     for( int i = 0; i < numCut; i++){
@@ -548,37 +562,32 @@ void GenericPlane::FillRateGraph(float x, float y){
 
 void GenericPlane::Draw(){
   if ( !isHistogramSet ) return;
-
-//hdEE and cutsFile
-  fCanvas->cd(1); hdEE->Draw("colz");
-  if( numCut > 0 ){
-    for( int i = 0; i < numCut; i++){
-      cutG = (TCutG *) cutList->At(i);
-      cutG->Draw("same");
-    }
-  }
-
-  //hdEtotE
-  //~ fCanvas->cd(3); hdEtotE->Draw("colz");
-  //hdEdT instead
-  fCanvas->cd(3); hdEdT->Draw("colz");
-
-  //hE & hdE
+ 
+  //1D - hdE, hE, htotE, hDt
   fCanvas->cd(2)->cd(1); hdE->Draw();
   fCanvas->cd(2)->cd(2); hE->Draw();
-
-  //TDiff
-  fCanvas->cd(4)->cd(1); hTDiff->Draw(); line->Draw();
-
-
-  //rateGraph
-  fCanvas->cd(4)->cd(2);
-  htotE->Draw();
-  //~ rateGraph->Draw("AP"); legend->Draw();
-  //~ hdT->Draw(); ///
-
+  fCanvas->cd(4)->cd(1); htotE->Draw();
+  fCanvas->cd(4)->cd(2); hdT->Draw();
+  
+  //2D hdEE, hdEtotE, hdEdT 
+ fCanvas->cd(1); 
+ hdEE->Draw("col");
+ if( numCut > 0 ){
+   for( int i = 0; i < numCut; i++){
+     cutG = (TCutG *) cutList->At(i);
+     cutG->Draw("same");
+   }
+ }
+fCanvas->cd(3); hdEtotE->Draw("col");
+///  fCanvas->cd(1)->cd(3); hdEdT->Draw("col");
+///
   fCanvas->Modified();
   fCanvas->Update();
+  
+///  gCanvas->cd(); hdEdT->Draw("col");
+///  gCanvas->Modified();
+///  gCanvas->Update();
+///  
   gSystem->ProcessEvents();
 }
 
