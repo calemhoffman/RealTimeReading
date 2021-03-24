@@ -175,9 +175,9 @@ int main(int argc, char *argv[]){
     gp = new GenericPlane();
     gp->SetChannelMask(1,1,1,1,1,1,1,1,
 						1,1,1,1,1,1,1,1);
-    printf(" testing ### dE = ch-0, E = ch-4 \n");
+    printf(" testing ### dE = ch-11, E = ch-13 \n");
     printf(" testing ### output file is test.root \n");
-    gp->SetdEEChannels(11, 4);
+    gp->SetdEEChannels(11, 13);
     rootFileName = "test.root";
   }else if( location == "testingOne") {
     gp = new GenericPlane();
@@ -719,18 +719,7 @@ if( c == 'w'){ ////========== wave form mode
       file.Close();
 
       gp->FillHit(dig.GetNChannelEventCount());
-
-      //=========================== Display
-      if( !isDebug) system("clear");
-      PrintCommands();
-      printf("\n======== Tree, Histograms, and Table update every ~%.2f sec\n", updatePeriod/1000.);
-      printf("Time Elapsed         = %.3f sec = %.1f min\n", (CurrentTime - StartTime)/1e3, (CurrentTime - StartTime)/1e3/60.);
-      printf("Built-event save to  : %s \n", rootFileName.Data());
-      printf("File size            : %.4f MB \n", fileSize );
-      printf("Database             : %s\n", dbName.c_str());
-
-      printf("\n");
-
+      
       float timeRangeSec = dig.GetRawTimeRange() * 2e-9;
       string tag = "tag=" + location;
 
@@ -742,10 +731,6 @@ if( c == 'w'){ ////========== wave form mode
 	    WriteToDataBase(dbName, Form("ch%d", ch), tag, dig.GetChannelGet(ch)*1.0/timeRangeSec);
 	  }
 
-      dig.PrintReadStatistic();
-      dig.PrintEventBuildingStat(updatePeriod);
-
-
       if( gp->GetClassID() == 2 ){
         totalRate = gp->GetdEECount()/timeRangeSec;
         //aveRate = gp->GetdEECount(10.0);
@@ -754,11 +739,22 @@ if( c == 'w'){ ////========== wave form mode
          totalRate = dig.GetNChannelEventCount(nCH)*1.0/timeRangeSec;
          //aveRate = dig.GetNChannelEventCount(nCH,10.0): //average over run
       }
-
-      printf(" Rate( all) :%7.2f pps\n", totalRate);
       if( totalRate >= 0.)gp->FillRateGraph((CurrentTime - StartTime)/1e3, totalRate);
       WriteToDataBase(dbName, "totalRate", tag, totalRate);
 
+	//=========================== Display
+      if( !isDebug) system("clear");
+      PrintCommands();
+      printf("\n======== Tree, Histograms, and Table update every ~%.2f sec\n", updatePeriod/1000.);
+      printf("Time Elapsed         = %.3f sec = %.1f min\n", (CurrentTime - StartTime)/1e3, (CurrentTime - StartTime)/1e3/60.);
+      printf("Built-event save to  : %s \n", rootFileName.Data());
+      printf("File size            : %.4f MB \n", fileSize );
+      printf("Database             : %s\n", dbName.c_str());
+
+      printf("\n");
+      dig.PrintReadStatistic();
+      dig.PrintEventBuildingStat(updatePeriod);
+      printf(" Rate( all) :%7.2f pps\n", totalRate);
       if(gp->IsCutFileOpen()){
         for( int i = 0 ; i < gp->GetNumCut(); i++ ){
           double count = gp->GetCountOfCut(i)*1.0/timeRangeSec;
