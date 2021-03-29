@@ -175,9 +175,8 @@ int main(int argc, char *argv[]){
     gp = new GenericPlane();
     gp->SetChannelMask(1,1,1,1,1,1,1,1,
 						1,1,1,1,1,1,1,1);
-    printf(" testing ### dE = ch-11, E = ch-13 \n");
     printf(" testing ### output file is test.root \n");
-    gp->SetdEEChannels(11, 13);
+    //gp->SetdEEChannels(11, 13);
     rootFileName = "test.root";
   }else if( location == "testingOne") {
     gp = new GenericPlane();

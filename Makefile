@@ -49,6 +49,6 @@ CutsCreator:	$(OBJS3) src/CutsCreator.c
 BoxScore	: src/BoxScore.c Class/DigitizerClass.h Class/FileIO.h Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h Class/MCPClass.h
 		g++ -std=c++11 -pthread src/BoxScore.c -o BoxScore  $(DEPLIBS) $(ROOTLIBS)
 
-BoxScoreReader: src/BoxScoreReader.c Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h
-		g++ -std=c++11 src/BoxScoreReader.c -o BoxScoreReader $(ROOTLIBS)
+#BoxScoreReader: src/BoxScoreReader.c Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h
+#		g++ -std=c++11 src/BoxScoreReader.c -o BoxScoreReader $(ROOTLIBS)
 

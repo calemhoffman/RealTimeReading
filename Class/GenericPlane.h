@@ -147,7 +147,7 @@ protected:
 
   TCanvas *fCanvas;
 ///  TCanvas *gCanvas;
-
+  TH1F * hCH[16]; //16 ind 1-D
   TH1F * hE;
   TH1F * hdE;
   TH1F * hdT;
@@ -208,6 +208,7 @@ GenericPlane::~GenericPlane(){
 
   delete fCanvas;
 ///  delete gCanvas;
+  for (Int_t i=0;i<16;i++) { delete hCH[i]; }
   delete hE;
   delete hdE;
   delete hdT;
@@ -251,7 +252,7 @@ GenericPlane::GenericPlane(){
 
   //=========== Channel Mask and rangeDE and rangeE is for GenericPlane
   ChannelMask = 0xff; /// Channel enable mask, 0x01, only frist channel, 0xff, all channel
-  nChannel = 8;
+  nChannel = 16;
 
   rangeDE[0] =     0; /// min range for dE
   rangeDE[1] = 60000; /// max range for dE
@@ -260,7 +261,7 @@ GenericPlane::GenericPlane(){
   histBins  =   1000; /// num bins for dE & E
   rangeTime =    500; /// range for Tdiff, nano-sec
 
-  NChannelForRealEvent = 8;  /// this is the number of channel for a real event;
+  NChannelForRealEvent = 1;  /// this is the number of channel for a real event;
 
   fCanvas = new TCanvas("fCanvas", "Main Canvas (Generic Plane)", 0, 0, 1000, 1000);
   gStyle->SetOptStat("neiou");
@@ -276,6 +277,7 @@ GenericPlane::GenericPlane(){
   chT = 7; ///default timing channel
   mode = 1; ///default channel Gain is equal
 
+  for (Int_t i=0;i<16;i++) { hCH[i] = NULL; }
   hdE     = NULL;
   hE      = NULL;
   hdT     = NULL;
@@ -365,6 +367,8 @@ void GenericPlane::SetCoincidentTimeWindow(int nanoSec){
 }
 
 void GenericPlane::ClearHistograms(){
+	
+  for (Int_t i=0;i<16;i++) { hCH[i]->Reset(); }
   hE->Reset();
   hdE->Reset();
   hdT->Reset();
@@ -406,6 +410,10 @@ void GenericPlane::SetGenericHistograms(){
   if( isHistogramSet ) return;
 
   float labelSize = 0.07;
+  for (Int_t i=0;i<16;i++) {
+	hCH[i] = new TH1F(Form("hCH%d",i),Form("ch=%d ; E [ch]; counts",i),
+	2000,0,16000);
+  }
 
   hE    = new TH1F(   "hE", Form("raw E (ch=%d, gain=%.2f) ; E [ch] ;count ",
   chE, chEGain),   histBins,  rangeE[0],  rangeE[1]);
@@ -475,15 +483,7 @@ void GenericPlane::SetGenericHistograms(){
 void GenericPlane::SetCanvasTitleDivision(TString titleExtra = ""){
   fCanvas->Clear();
   fCanvas->SetTitle(titleExtra);
-  fCanvas->Divide(2,2); //divides
-  fCanvas->cd(2)->Divide(1,2);
-  fCanvas->cd(4)->Divide(1,2);
-
-  fCanvas->cd(1)->SetLogz();//hdEE
-  fCanvas->cd(3)->SetLogz();//hdEtotE
-  fCanvas->cd(4)->cd(2)->SetLogy(); //hTDiff
-  
- /// gCanvas->Clear();
+  fCanvas->Divide(4,4); //divides
 }
 
 void GenericPlane::Fill(UInt_t dE, UInt_t E){
@@ -505,7 +505,6 @@ void GenericPlane::Fill(UInt_t dE, UInt_t E){
 void GenericPlane::Fill(UInt_t * energy, ULong64_t * times){
 
   if ( !isHistogramSet ) return;
-
   int E = energy[chE] ;// + gRandom->Gaus(0, 500);
   int dE = energy[chdE] ;//+ gRandom->Gaus(0, 500);
   unsigned long long int ET = times[chE]; //
@@ -520,6 +519,13 @@ void GenericPlane::Fill(UInt_t * energy, ULong64_t * times){
   //~ (float)T*chan2ns,(float)dET*chan2ns, dEdT);
 
 //'raw' fills
+  for (Int_t i=0;i<16;i++) {
+	if (energy[i]>0) {
+		//printf("ch %d: energy: %d\n",i,energy[i]);
+		int ech = energy[i];
+		hCH[i]->Fill(ech);
+	}
+  }
   hE->Fill(E);
   hdE->Fill(dE);
   hdT->Fill(dEdT);
@@ -548,7 +554,6 @@ void GenericPlane::Fill(UInt_t * energy, ULong64_t * times){
 }
 
 void GenericPlane::FillWaveEnergies(double * energy){
-
     hE->Fill(energy[chE]);
     hdE->Fill(energy[chdE]);
     hdEE->Fill(energy[chE], energy[chdE]);
@@ -573,31 +578,21 @@ void GenericPlane::FillRateGraph(float x, float y){
 void GenericPlane::Draw(){
   if ( !isHistogramSet ) return;
  
-  //1D - hdE, hE, htotE, hDt
-  fCanvas->cd(2)->cd(1); hdE->Draw();
-  fCanvas->cd(2)->cd(2); hE->Draw();
-  fCanvas->cd(4)->cd(1); htotE->Draw();
-  fCanvas->cd(4)->cd(2); hdT->Draw();
-  
-  //2D hdEE, hdEtotE, hdEdT 
- fCanvas->cd(1); 
- hdEE->Draw("col");
- if( numCut > 0 ){
-   for( int i = 0; i < numCut; i++){
-     cutG = (TCutG *) cutList->At(i);
-     cutG->Draw("same");
-   }
- }
-fCanvas->cd(3); hdEtotE->Draw("col");
-///  fCanvas->cd(1)->cd(3); hdEdT->Draw("col");
-///
+	for (Int_t i=0;i<16;i++) {
+		fCanvas->cd(i+1);
+		hCH[i]->Draw();
+	}
+ //hdEE->Draw("col");
+ //if( numCut > 0 ){
+   //for( int i = 0; i < numCut; i++){
+     //cutG = (TCutG *) cutList->At(i);
+     //cutG->Draw("same");
+   //}
+ //}
+ 
+ ///do not remove / modify
   fCanvas->Modified();
   fCanvas->Update();
-  
-///  gCanvas->cd(); hdEdT->Draw("col");
-///  gCanvas->Modified();
-///  gCanvas->Update();
-///  
   gSystem->ProcessEvents();
 }
 
@@ -624,15 +619,6 @@ void GenericPlane::SetHistogramsRange(){
                    histBins, chdEGain * rangeDE[0], chdEGain * rangeDE[1]);
 
   printf("===============  suggest clear histograms. \n");
-  ///hE->SetAxisRange(rangeE[0], rangeE[1], "X");
-  ///hdE->SetAxisRange(rangeDE[0], rangeDE[1], "X");
-  ///
-  ///hdEE->SetAxisRange(chEGain * rangeE[0], chEGain * rangeE[1], "X");
-  ///hdEE->SetAxisRange(chdEGain * rangeDE[0], chdEGain * rangeDE[1], "Y");
-  ///
-  ///hdEtotE->SetAxisRange(chEGain * rangeE[0] + chdEGain * rangeDE[0], chEGain * rangeE[1] + chdEGain * rangeDE[1], "X");
-  ///hdEtotE->SetAxisRange(chdEGain * rangeDE[0], chdEGain * rangeDE[1], "Y");
-
 }
 
 void GenericPlane::SetChannelsPlotRange(int ** range){
