@@ -292,7 +292,7 @@ int main(int argc, char *argv[]){
   /* ROOT TREE                                                                               */
   /* *************************************************************************************** */
 
-  string folder = "setting/";/// +  expName;
+  string folder = "setting";/// +  expName;
   FileIO file(rootFileName);
 
   ///==== Save setting into the root file

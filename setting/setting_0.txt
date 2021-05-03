@@ -1,7 +1,7 @@
 //============= Discriminator
-1200     //Tigger Threshold (in LSB)
+400     //Tigger Threshold (in LSB)
 496     // Trigger Hold Off
-16      // Fast Discriminator smooth, Trigger Filter smoothing factor (number of samples to average for RC-CR2 filter) Options: 1; 2; 4; 8; 16; 32
+32      // Fast Discriminator smooth, Trigger Filter smoothing factor (number of samples to average for RC-CR2 filter) Options: 1; 2; 4; 8; 16; 32
 48     // Input Signal Rise time (ch)
 //============= Trapezoid
 496     //Trapezoid Rise Time (ch)
