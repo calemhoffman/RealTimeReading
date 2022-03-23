@@ -198,8 +198,8 @@ int main(int argc, char *argv[]){
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "crosstime" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,0,1,0,1,0);
-    gp->SetdEEChannels(1, 3);
+    gp->SetChannelMask(1,0,0,1,0,0,1,0);
+    gp->SetdEEChannels(1, 4);
     gp->SetTChannels(7);
     gp->SetNChannelForRealEvent(3);
   }else if ( location == "ZD" ) {
