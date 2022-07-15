@@ -627,14 +627,14 @@ void GenericPlane::Draw(){
   }else{
     
     fCanvas->Divide(2, 2);
-    fCanvas->cd(2)->Divide(2,1);
-    fCanvas->cd(4)->Divide(2,1);
+    fCanvas->cd(2)->Divide(1,2);
+    fCanvas->cd(4)->Divide(1,2);
  
     //1D - hdE, hE, htotE, hDt
     fCanvas->cd(2)->cd(1); hdE->Draw();
     fCanvas->cd(2)->cd(2); hE->Draw();
     fCanvas->cd(4)->cd(1); htotE->Draw();
-    fCanvas->cd(4)->cd(2); hdT->Draw();
+    fCanvas->cd(4)->cd(2); hTDiff->Draw(); //hdT->Draw();
     
     //2D hdEE, hdEtotE, hdEdT 
     fCanvas->cd(1); 

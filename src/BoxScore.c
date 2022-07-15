@@ -189,7 +189,7 @@ int main(int argc, char *argv[]){
   if ( PlaneSetting(location) == 0 ) return 0;
 
 //pull from FileIO not dig...
-  string expName = "infl21";
+  string expName = "infl26";
 
   printf("******************************************** \n");
   printf("****          BoxScoreXY                **** \n");
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]){
   printf("      Class :\e[33m %s \e[0m\n", gp->GetClassName().c_str() );
   printf("    save to : %s \n", rootFileName.Data() );
   printf("   Exp Name :\e[33m %s \e[0m, NOT same as database name \n", expName.c_str());
-  printf("   DataBase Name :\e[33m RAISOR_%s \e[0m\n", dbName.c_str());
+  printf("   DataBase Name :\e[33m %s \e[0m\n", dbName.c_str());
  
   /* *************************************************************************************** */
   /* Canvas and Digitzer                                                                               */
