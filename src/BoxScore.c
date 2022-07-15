@@ -301,7 +301,8 @@ void EventLoop(){
    
   uint32_t PreviousTime = get_time();
   PrintCommands();
-
+  int NChannels = dig->GetNChannel();
+  uint ChannelMask = gp->GetChannelMask();
   const unsigned long long int ch2ns = dig->GetChannelToNanoSec();
 
   //##################################################################
