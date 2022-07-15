@@ -417,12 +417,12 @@ void EventLoop(){
       gp->FillHit(dig->GetNChannelEventCount());
 
       float timeRangeSec = dig->GetRawTimeRange() * 2e-9;
-      // string tag = "tag=" + location;
+      string tag = "tag=" + location;
 
       double totalRate = 0;
       double aveRate = 0; //ave rate over run
 
-      for (int ch = 0; ch < NChannels; ch++) {
+      for (int ch = 0; ch < dig->GetNChannel(); ch++) {
        if (!(ChannelMask & (1<<ch))) continue;
        WriteToDataBase(dbName, Form("ch%d", ch), tag, dig->GetChannelGet(ch)*1.0/timeRangeSec);
       }
