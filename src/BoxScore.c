@@ -418,7 +418,9 @@ void EventLoop(){
       gp->FillHit(dig->GetNChannelEventCount());
 
       float timeRangeSec = dig->GetRawTimeRange() * 2e-9;
-      string tag = "tag=" + location;
+      
+      // string tag = "tag=" + location;
+      string tag = "tag=test";
 
       double totalRate = 0;
       double aveRate = 0; //ave rate over run
