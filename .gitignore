@@ -19,3 +19,4 @@ data
 GUIBoxScore
 
 setting/infl_*
+src/.vscode/settings.json
