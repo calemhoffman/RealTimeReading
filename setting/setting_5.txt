@@ -5,8 +5,8 @@
 48     // Input Signal Rise time (ch)
 //============= Trapezoid
 96     //Trapezoid Rise Time (ch)
-200     //Trapezoid Flat Top  (ch)
-20000     //Decay Time Constant (ch)
+500     //Trapezoid Flat Top  (ch)
+500     //Decay Time Constant (ch)
 150     // Flat top delay (peaking time) (ch)
 2       // Ns peak, Peak mean (number of samples to average for trapezoid height calculation). Options: 0-> 1 sample; 1->4 samples; 2->16 samples; 3->64 samples
 100     // Peak holdoff (ch), start at the end of flat-top, defines how close must be two trapezoid to be considered as piled up
@@ -25,6 +25,6 @@ true    // is pulse positive parity;
 0       // Enable Rise time Discrimination. Options: 0->disabled; 1->enabled
 100     // Rise Time Validation Window (ns)
 //============= software channel gain
-0.25     // if 1.0, use dynamic range, if any channel is not 1, will use gain for its own channel
-1500     //plot min
-5500     //plot max
+1.0     // if 1.0, use dynamic range, if any channel is not 1, will use gain for its own channel
+-100     //plot min
+20000     //plot max
