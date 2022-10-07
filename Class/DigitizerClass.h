@@ -968,8 +968,8 @@ void Digitizer::GetChannelSetting(int ch){
   printf("** = multiple of 16 \n");
 
   printf("==========----- input \n");
-  CAEN_DGTZ_ReadRegister(handle, 0x1020 + (ch << 8), value); printf("%20s  %d ch \n", "Record Length",  value[0] * 8); ///Record length
-  CAEN_DGTZ_ReadRegister(handle, 0x1038 + (ch << 8), value); printf("%20s  %d ch \n", "Pre-tigger",  value[0] * 4);    ///Pre-trigger
+  CAEN_DGTZ_ReadRegister(handle, 0x1020 + (ch << 8), value); printf("%20s  %d ch \n", "Record Length",  value[0] * 4*ch2ns); ///Record length
+  CAEN_DGTZ_ReadRegister(handle, 0x1038 + (ch << 8), value); printf("%20s  %d ch \n", "Pre-tigger",  value[0] * 4*ch2ns);    ///Pre-trigger
   printf("%20s  %s \n", "polarity",  (polarity & 1) ==  0 ? "Positive" : "negative"); ///Polarity
   printf("%20s  %.0f sample \n", "Ns baseline",  pow(4, 1 + baseline & 7)); ///Ns baseline
   CAEN_DGTZ_ReadRegister(handle, 0x1098 + (ch << 8), value); printf("%20s  %.2f %% \n", "DC offset",  value[0] * 100./ int(0xffff) ); ///DC offset
@@ -977,19 +977,19 @@ void Digitizer::GetChannelSetting(int ch){
 
   printf("==========----- discriminator \n");
   CAEN_DGTZ_ReadRegister(handle, 0x106C + (ch << 8), value); printf("%20s  %d LSB\n", "Threshold",  value[0]); ///Threshold
-  CAEN_DGTZ_ReadRegister(handle, 0x1074 + (ch << 8), value); printf("%20s  %d ch \n", "trigger hold off *",  value[0] * 8); ///Trigger Hold off
+  CAEN_DGTZ_ReadRegister(handle, 0x1074 + (ch << 8), value); printf("%20s  %d ch \n", "trigger hold off *",  value[0] * 4*ch2ns); ///Trigger Hold off
   CAEN_DGTZ_ReadRegister(handle, 0x1054 + (ch << 8), value); printf("%20s  %d sample \n", "Fast Dis. smoothing",  value[0] ); ///Fast Discriminator smoothing
-  CAEN_DGTZ_ReadRegister(handle, 0x1058 + (ch << 8), value); printf("%20s  %d ns \n", "Input rise time **",  value[0] * 8 * ch2ns); ///Input rise time
+  CAEN_DGTZ_ReadRegister(handle, 0x1058 + (ch << 8), value); printf("%20s  %d ns \n", "Input rise time **",  value[0] * 4 * ch2ns); ///Input rise time
 
   printf("==========----- Trapezoid \n");
   CAEN_DGTZ_ReadRegister(handle, 0x1080 + (ch << 8), value); printf("%20s  %d bit = Floor( rise x decay / 64 )\n", "Trap. Rescaling",  trapRescaling ); ///Trap. Rescaling Factor
-  CAEN_DGTZ_ReadRegister(handle, 0x105C + (ch << 8), value); printf("%20s  %d ns \n", "Trap. rise time **",  value[0] * 8 * ch2ns  ); ///Trap. rise time, 2 for 1 ch to 2ns
+  CAEN_DGTZ_ReadRegister(handle, 0x105C + (ch << 8), value); printf("%20s  %d ns \n", "Trap. rise time **",  value[0] * 4 * ch2ns  ); ///Trap. rise time, 2 for 1 ch to 2ns
   CAEN_DGTZ_ReadRegister(handle, 0x1060 + (ch << 8), value);
-  int flatTopTime = value[0] * 8 * ch2ns;  printf("%20s  %d ns \n", "Trap. flat time **",  flatTopTime); ///Trap. flat time
-  CAEN_DGTZ_ReadRegister(handle, 0x1068 + (ch << 8), value); printf("%20s  %d ns \n", "Decay time **",  value[0] * 8 * ch2ns); ///Trap. pole zero
-  CAEN_DGTZ_ReadRegister(handle, 0x1064 + (ch << 8), value); printf("%20s  %d ns = %.2f %% \n", "peaking time **",  value[0] * 8 * ch2ns, value[0] * 800. * ch2ns / flatTopTime ); //Peaking time
+  int flatTopTime = value[0] * 4 * ch2ns;  printf("%20s  %d ns \n", "Trap. flat time **",  flatTopTime); ///Trap. flat time
+  CAEN_DGTZ_ReadRegister(handle, 0x1068 + (ch << 8), value); printf("%20s  %d ns \n", "Decay time **",  value[0] * 4 * ch2ns); ///Trap. pole zero
+  CAEN_DGTZ_ReadRegister(handle, 0x1064 + (ch << 8), value); printf("%20s  %d ns = %.2f %% \n", "peaking time **",  value[0] * 4 * ch2ns, value[0] * 400. * ch2ns / flatTopTime ); //Peaking time
   printf("%20s  %.0f sample\n", "Ns peak",  pow(4, NsPeak & 3)); //Ns peak
-  CAEN_DGTZ_ReadRegister(handle, 0x1078 + (ch << 8), value); printf("%20s  %d ns \n", "Peak hole off **",  value[0] * 8 *ch2ns ); ///Peak hold off
+  CAEN_DGTZ_ReadRegister(handle, 0x1078 + (ch << 8), value); printf("%20s  %d ns \n", "Peak hole off **",  value[0] * 4 *ch2ns ); ///Peak hold off
 
   printf("==========----- Other \n");
   CAEN_DGTZ_ReadRegister(handle, 0x10C4 + (ch << 8), value); printf("%20s  %d \n", "Energy fine gain ?",  value[0]); ///Energy fine gain
@@ -1135,13 +1135,13 @@ void Digitizer::LoadChannelSetting (const int ch, string fileName) {
         if( count ==  0 ) DPPParams.thr[ch]        = atoi(line.substr(0, pos).c_str());
         if( count ==  1 ) DPPParams.trgho[ch]      = atoi(line.substr(0, pos).c_str());
         if( count ==  2 ) DPPParams.a[ch]          = atoi(line.substr(0, pos).c_str());
-        if( count ==  3 ) DPPParams.b[ch]          = atoi(line.substr(0, pos).c_str())/8*8; /// digitizer only accept multiple of 8
-        if( count ==  4 ) DPPParams.k[ch]          = atoi(line.substr(0, pos).c_str())/8*8;
-        if( count ==  5 ) DPPParams.m[ch]          = atoi(line.substr(0, pos).c_str())/8*8;
-        if( count ==  6 ) DPPParams.M[ch]          = atoi(line.substr(0, pos).c_str())/8*8;
-        if( count ==  7 ) DPPParams.ftd[ch]        = atoi(line.substr(0, pos).c_str())/8*8;
+        if( count ==  3 ) DPPParams.b[ch]          = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns; /// digitizer only accept multiple of 4/ch2ns*4*ch2ns
+        if( count ==  4 ) DPPParams.k[ch]          = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns;
+        if( count ==  5 ) DPPParams.m[ch]          = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns;
+        if( count ==  6 ) DPPParams.M[ch]          = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns;
+        if( count ==  7 ) DPPParams.ftd[ch]        = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns;
         if( count ==  8 ) DPPParams.nspk[ch]       = atoi(line.substr(0, pos).c_str());
-        if( count ==  9 ) DPPParams.pkho[ch]       = atoi(line.substr(0, pos).c_str())/8*8;
+        if( count ==  9 ) DPPParams.pkho[ch]       = atoi(line.substr(0, pos).c_str())/4/ch2ns*4*ch2ns;
         if( count == 10 ) DPPParams.nsbl[ch]       = atoi(line.substr(0, pos).c_str());
         if( count == 11 ) inputDynamicRange[ch]    = atoi(line.substr(0, pos).c_str());
         if( count == 12 ) DCOffset[ch]             = atof(line.substr(0, pos).c_str());
