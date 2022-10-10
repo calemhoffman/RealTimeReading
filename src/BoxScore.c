@@ -520,8 +520,8 @@ int PlaneSetting(string location){
     rootFileName = "test.root";
   }else if( location == "exit") {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,0,0,1,0,1,0);
-    gp->SetdEEChannels(1, 3);
+    gp->SetChannelMask(0,0,0,0,1,0,0,1);
+    gp->SetdEEChannels(0, 3);
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "cross" ) {
     gp = new GenericPlane();
