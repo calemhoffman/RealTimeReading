@@ -26,6 +26,10 @@ private:
   TH1F * hXg;
   TH1F * hYg;
   TH2F * hXYg;
+  TH2F * hXX; 
+  TH2F * hYY;
+  TH2F * hXE;
+  TH2F * hYE;
   
   TH1F * hX1, * hX2, * hY1, * hY2;
   
@@ -45,9 +49,9 @@ HeliosTarget::HeliosTarget(){
   ChannelMask = 0xb6; /// Channel enable mask, 0x01, only frist channel, 0xff, all channel
   
   rangeDE[0] =     0; /// min range for dE
-  rangeDE[1] = 80000; /// max range for dE
+  rangeDE[1] = 8000; /// max range for dE
   rangeE[0] =      0; /// min range for E
-  rangeE[1] =  60000; /// max range for E
+  rangeE[1] =  8000; /// max range for E
   rangeTime =    500; /// range for Tdiff, nano-sec
   
   chE = 7;   chEGain = 1.0;
@@ -71,13 +75,18 @@ HeliosTarget::HeliosTarget(){
   hY1 = NULL;
   hY2 = NULL;
   
+  hXX= NULL;
+  hYY= NULL;
+  hXE= NULL;
+  hYE= NULL;
+  
   chX1 = 0; // left 
-  chX2 = 6; // right
+  chX2 = 1; // right
   
   chY1 = 2; // top
-  chY2 = 4; // bottom
+  chY2 = 3; // bottom
   
-  GenericPlane::SetChannelMask(1,1,0,1,0,1,0,1);
+  GenericPlane::SetChannelMask(0,0,0,0,1,1,1,1);
   
 }
 
@@ -102,13 +111,13 @@ HeliosTarget::~HeliosTarget(){
 
 void HeliosTarget::SetOthersHistograms(){
   
-  int bin = 90; //2cm / 100 bins = 2 mm / bin
+  int bin = 80; //2cm / 40 bins = 0.5 mm / bin
   float labelSize = 0.04;
   
-  float xMin = -0.9;
-  float xMax =  0.9;
-  float yMin = -0.9;
-  float yMax =  0.9;
+  float xMin = -0.99;
+  float xMax =  0.99;
+  float yMin = -0.99;
+  float yMax =  0.99;
   
   hX = new TH1F("hX", "X; X[ch]; count", bin, xMin, xMax);
   hY = new TH1F("hY", "Y; Y[ch]; count", bin, yMin, yMax);  
@@ -117,6 +126,11 @@ void HeliosTarget::SetOthersHistograms(){
   hXg = new TH1F("hXg", "X (cut1); X[ch]; count", bin, xMin, xMax);
   hYg = new TH1F("hYg", "Y (cut1); Y[ch]; count", bin, yMin, yMax);
   hXYg = new TH2F("hXYg", "X-Y (cut1); X[ch]; Y[ch]", bin, xMin, xMax, bin, yMin, yMax);
+  
+  hXX= new TH2F("hXX", "X1-X2; X[ch]; X[ch]", bin, 0, 8000, bin, 0, 8000);
+  hYY= new TH2F("hYY", "Y1-Y2; Y[ch]; Y[ch]", bin, 0, 8000, bin, 0, 8000);
+  hXE= new TH2F("hXE", "X-E; X[ch]; E[ch]", bin, 0, 8000, 2*bin, 2*xMin, 2*xMax);
+  hYE= new TH2F("hYE", "Y-E; Y[ch]; E[ch]", bin, 0, 8000, 2*bin, 2*yMin, 2*yMax);
   
   hX->GetXaxis()->SetLabelSize(labelSize);
   hX->GetYaxis()->SetLabelSize(labelSize);
@@ -140,6 +154,8 @@ void HeliosTarget::SetOthersHistograms(){
   hY2 = new TH1F("hY2", Form("Y2 BOTTOM (ch=%d)", chY2), bin, 100, 26000);
   
   hdE->SetTitle("raw dE(Y1+Y2)");;
+  hE->SetTitle("raw E(X1+X2)");
+  hE->SetBins(1000,0,8000);
   
   isHistogramSet = true;
   
@@ -164,7 +180,7 @@ void HeliosTarget::SetCanvasTitleDivision(TString titleExtra = ""){
   {
     fCanvas->Divide(2,2);//ede 2D, 1Ds
   } else {
-    fCanvas->Divide(2,2);//XY, X1D, Y1D only
+    fCanvas->Divide(3,3);//XY, X1D, Y1D only
   }
 
 }
@@ -217,6 +233,12 @@ void HeliosTarget::Draw(){
     if( numCut > 0  ) hXg->Draw("same");
     fCanvas->cd(2); gStyle->SetOptStat("neiour"); hY->Draw("");
     if( numCut > 0  ) hYg->Draw("same");
+    fCanvas->cd(4); gStyle->SetOptStat("neiour"); hdE->Draw(""); 
+    fCanvas->cd(5); gStyle->SetOptStat("neiour"); hE->Draw("");
+    fCanvas->cd(6); gStyle->SetOptStat("neiour"); hXX->Draw("col");
+    fCanvas->cd(9); gStyle->SetOptStat("neiour"); hYY->Draw("col");
+    fCanvas->cd(8); gStyle->SetOptStat("neiour"); hXE->Draw("col");
+    fCanvas->cd(7); gStyle->SetOptStat("neiour"); hYE->Draw("col");
   }
   
   fCanvas->Modified();
@@ -231,14 +253,20 @@ void HeliosTarget::Draw(){
 void HeliosTarget::Fill(UInt_t * energy, ULong64_t * times){
   //GenericPlane::Fill(energy);
   if ( !isHistogramSet ) return;
-  int E = energy[chE] ;//+ gRandom->Gaus(0, 500);
+  int E = energy[chX1] +energy[chX2] ;//+ gRandom->Gaus(0, 500);
   int dE = energy[chY1] + energy[chY2] ;//+ gRandom->Gaus(0, 500);
   float X = 0;
   float Y = 0;
-  if( energy[chX1] !=0 && energy[chX2] !=0)
+  if( energy[chX1] !=0 && energy[chX2] !=0) {
     X = ((float)energy[chX1] - (float)energy[chX2])/((float)energy[chX1] + (float)energy[chX2]);
-  if( energy[chY1] !=0 && energy[chY2] !=0 )
+    hXX->Fill(energy[chX1],energy[chX2]);
+    hXE->Fill(E,X);
+  }
+  if( energy[chY1] !=0 && energy[chY2] !=0 ) {
     Y = ((float)energy[chY1] - (float)energy[chY2])/((float)energy[chY1] + (float)energy[chY2]);
+    hYY->Fill(energy[chY1],energy[chY2]);
+    hYE->Fill(dE,X);
+  }
 
   hX1->Fill(energy[chX1]);
   hX2->Fill(energy[chX2]);
@@ -250,14 +278,12 @@ void HeliosTarget::Fill(UInt_t * energy, ULong64_t * times){
  ///   hY->Reset();
  ///   hXY->Reset();
  /// }
-  if( X != 0.0 ) hX->Fill(X);
-  if( Y != 0.0 ) hY->Fill(Y);
-  if (X != 0.0 && Y != 0.0)
-    hXY->Fill(X, Y);
-  
-  hE->Fill(E);
-  hdE->Fill(dE);
-  hdEE->Fill(E, dE);
+  if( X != 0.0 ) {hX->Fill(X); hE->Fill((float)E);}
+  if( Y != 0.0 ) {hY->Fill(Y);   hdE->Fill((float)dE); }
+
+  if (X != 0.0 && Y != 0.0) {
+    hXY->Fill(X, Y);   hdEE->Fill(E, dE);
+  }
   
   float totalE = dE * chdEGain + E * chEGain;
   hdEtotE->Fill(totalE, dE);

@@ -376,7 +376,7 @@ void EventLoop(){
 
     
     if (ElapsedTime > updatePeriod && dig->GetAcqMode() == "list") {
-      if (gp->GetCanvasID() == 2) gp->ClearHistograms();
+      //if (gp->GetCanvasID() == 2) gp->ClearHistograms();
       //======================== Fill TDiff
       for( int i = 0; i < dig->GetNumRawEvent() - 1; i++){
         ///~ ULong64_t timeDiff = dig->GetRawTimeStamp(i+1) - dig->GetRawTimeStamp(i);
@@ -533,8 +533,8 @@ int PlaneSetting(string location){
     gp->SetNChannelForRealEvent(3);
   }else if ( location == "ZD" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(0,0,1,0,0,1,0,0);
-    gp->SetdEEChannels(2, 5);
+    gp->SetChannelMask(0,0,0,0,0,0,1,1);
+    gp->SetdEEChannels(1, 0);
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "XY" ) {
     gp = new HeliosTarget();
@@ -549,9 +549,9 @@ int PlaneSetting(string location){
   }else if ( location == "XYpos" ) {
     gp = new HeliosTarget();
     gp->SetCanvasID(2);
-    gp->SetChannelMask(1,1,0,1,0,1,0,1);
-    gp->SetNChannelForRealEvent(5);
-    updatePeriod=5000;
+    gp->SetChannelMask(0,0,0,0,1,1,1,1);
+    gp->SetNChannelForRealEvent(4);
+    updatePeriod=1000;
   }else if ( location == "IonCh"){
     gp = new GenericPlane();
     gp->SetChannelMask(1,0,0,1,0,0,0,0);
