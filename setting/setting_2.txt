@@ -2,14 +2,14 @@
 500     //Tigger Threshold (in LSB)
 496     // Trigger Hold Off
 32      // Fast Discriminator smooth, Trigger Filter smoothing factor (number of samples to average for RC-CR2 filter) Options: 1; 2; 4; 8; 16; 32
-96     // Input Signal Rise time (ch)
+48     // Input Signal Rise time (ch)
 //============= Trapezoid
-524    //Trapezoid Rise Time (ch)
-748     //Trapezoid Flat Top  (ch)
-7500     //Decay Time Constant (ch)
-604    // Flat top delay (peaking time) (ch)
+500    //Trapezoid Rise Time (ch)
+500     //Trapezoid Flat Top  (ch)
+25000     //Decay Time Constant (ch)
+300    // Flat top delay (peaking time) (ch)
 1       // Ns peak, Peak mean (number of samples to average for trapezoid height calculation). Options: 0-> 1 sample; 1->4 samples; 2->16 samples; 3->64 samples
-248     // Peak holdoff (ch), start at the end of flat-top, defines how close must be two trapezoid to be considered as piled up
+1000     // Peak holdoff (ch), start at the end of flat-top, defines how close must be two trapezoid to be considered as piled up
 //============= Input
 3       // Ns baseline, number of samples for baseline average calculation. Options: 1->16 samples; 2->64 samples; 3->256 samples; 4->1024 samples; 5->4096 samples; 6->16384 samples
 1     //input dynamic range, 0 = 2 Vpp, 1 = 0.5 Vpp

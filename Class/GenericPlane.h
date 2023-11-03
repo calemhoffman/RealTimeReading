@@ -419,7 +419,7 @@ void GenericPlane::SetGenericHistograms(){
   float labelSize = 0.07;
 
   for( int i = 0 ; i < numChannel ; i++){
-    hch[i] = new TH1F(Form("hch%02d",i), Form("E : ch-%02d",i), histBins, rangeE[0], rangeE[1]);
+    hch[i] = new TH1F(Form("hch%02d",i), Form("E : ch-%02d",i), 1000,0,12000);//histBins, rangeE[0], rangeE[1]);
   }
 
   hE    = new TH1F(   "hE", Form("raw E (ch=%d, gain=%.2f) ; E [ch] ;count ",   chE,  chEGain), histBins,  rangeE[0],  rangeE[1]);
