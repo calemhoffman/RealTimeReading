@@ -148,6 +148,7 @@ int main(int argc, char *argv[]){
     printf("                        +-- XY \n");
     printf("                        +-- XYede (XY de-e only) \n");
     printf("                        +-- XYpos (X,Y 1-D only) \n");
+    printf("                        +-- MCPSi (MCP + Si)\n");
     printf("                        +-- IonCh (IonChamber)  \n");
     printf("                        +-- MCP (Micro Channel Plate) \n");
     return -1;
@@ -551,6 +552,13 @@ int PlaneSetting(string location){
     gp->SetCanvasID(2);
     gp->SetChannelMask(0,0,0,0,1,1,1,1);
     gp->SetNChannelForRealEvent(4);
+    updatePeriod=1000;
+  }else if ( location == "MCPSi" ) {
+    gp = new MCPSi();
+    gp->SetCanvasID(2);
+    gp->SetChannelMask(0xffff);
+//    gp->SetChannelMask(0,0,0,0,1,1,1,1,0,0,0,1,0,0,1,0);
+    gp->SetNChannelForRealEvent(1);
     updatePeriod=1000;
   }else if ( location == "IonCh"){
     gp = new GenericPlane();
