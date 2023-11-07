@@ -82,11 +82,11 @@ MCPSi::MCPSi(){
   hYE= NULL;
   
   // set MCP positions from dig channel
-  chX1 = 8; // left 
-  chX2 = 9; // right
+  chX1 = 2; // left 
+  chX2 = 3; // right
   
-  chY1 = 10; // top
-  chY2 = 11; // bottom
+  chY1 = 6; // top
+  chY2 = 7; // bottom
   
   GenericPlane::SetChannelMask(0xffff);
   
@@ -182,7 +182,7 @@ void MCPSi::SetCanvasTitleDivision(TString titleExtra = ""){
   {
     fCanvas->Divide(2,2);//ede 2D, 1Ds
   } else {
-    fCanvas->Divide(3,3);//XY, X1D, Y1D only
+    fCanvas->Divide(3,2);//XY, X1D, Y1D, DE, E, DE-E
   }
 
 }
@@ -228,7 +228,7 @@ void MCPSi::Draw(){
     }
     fCanvas->cd(2); hdE->Draw();
     fCanvas->cd(4); hE->Draw();
-  } else if (canID==2) {
+  } else if (canID==2) { /////
     fCanvas->cd(1); hXY->Draw("col"); 
     if( numCut > 0  ) hXYg->Draw("same");
     fCanvas->cd(3); gStyle->SetOptStat("neiour"); hX->Draw("");
@@ -237,10 +237,10 @@ void MCPSi::Draw(){
     if( numCut > 0  ) hYg->Draw("same");
     fCanvas->cd(4); gStyle->SetOptStat("neiour"); hdE->Draw(""); 
     fCanvas->cd(5); gStyle->SetOptStat("neiour"); hE->Draw("");
-    fCanvas->cd(6); gStyle->SetOptStat("neiour"); hXX->Draw("col");
-    fCanvas->cd(9); gStyle->SetOptStat("neiour"); hYY->Draw("col");
-    fCanvas->cd(8); gStyle->SetOptStat("neiour"); hXE->Draw("col");
-    fCanvas->cd(7); gStyle->SetOptStat("neiour"); hYE->Draw("col");
+    fCanvas->cd(6); gStyle->SetOptStat("neiour"); hdEE->Draw("col");
+ //   fCanvas->cd(9); gStyle->SetOptStat("neiour"); hYY->Draw("col");
+ //   fCanvas->cd(8); gStyle->SetOptStat("neiour"); hXE->Draw("col");
+ //   fCanvas->cd(7); gStyle->SetOptStat("neiour"); hYE->Draw("col");
   }
   
   fCanvas->Modified();
@@ -256,7 +256,7 @@ void MCPSi::Fill(UInt_t * energy, ULong64_t * times){
   //GenericPlane::Fill(energy);
   if ( !isHistogramSet ) return;
   int E = energy[chE];
-  int dE = energy[chde];//+ gRandom->Gaus(0, 500);
+  int dE = energy[chdE];//+ gRandom->Gaus(0, 500);
   float X = 0;
   float Y = 0;
   if( energy[chX1] !=0 && energy[chX2] !=0) {
@@ -284,8 +284,9 @@ void MCPSi::Fill(UInt_t * energy, ULong64_t * times){
   if( Y != 0.0 ) {hY->Fill(Y);   hdE->Fill((float)dE); }
 
   if (X != 0.0 && Y != 0.0) {
-    hXY->Fill(X, Y);   hdEE->Fill(E, dE);
+    hXY->Fill(X, Y);  
   }
+  hdEE->Fill(E, dE);
   
   float totalE = dE * chdEGain + E * chEGain;
   hdEtotE->Fill(totalE, dE);

@@ -47,6 +47,7 @@
 #include "../Class/FileIO.h"
 #include "../Class/GenericPlane.h"
 #include "../Class/HelioTarget.h"
+#include "../Class/MCPSi.h"
 //#include "../Class/IsoDetect.h"
 #include "../Class/HelioArray.h"
 #include "../Class/MCPClass.h"
