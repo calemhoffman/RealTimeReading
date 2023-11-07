@@ -182,7 +182,7 @@ void MCPSi::SetCanvasTitleDivision(TString titleExtra = ""){
   {
     fCanvas->Divide(2,2);//ede 2D, 1Ds
   } else {
-    fCanvas->Divide(3,2);//XY, X1D, Y1D, DE, E, DE-E
+    fCanvas->Divide(3,3);//XY, X1D, Y1D, DE, E, DE-E
   }
 
 }
@@ -238,6 +238,7 @@ void MCPSi::Draw(){
     fCanvas->cd(4); gStyle->SetOptStat("neiour"); hdE->Draw(""); 
     fCanvas->cd(5); gStyle->SetOptStat("neiour"); hE->Draw("");
     fCanvas->cd(6); gStyle->SetOptStat("neiour"); hdEE->Draw("col");
+    fCanvas->cd(7); gStyle->SetOptStat("neiour");hTDiff->Draw();
  //   fCanvas->cd(9); gStyle->SetOptStat("neiour"); hYY->Draw("col");
  //   fCanvas->cd(8); gStyle->SetOptStat("neiour"); hXE->Draw("col");
  //   fCanvas->cd(7); gStyle->SetOptStat("neiour"); hYE->Draw("col");

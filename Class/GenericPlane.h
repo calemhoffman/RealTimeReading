@@ -434,7 +434,7 @@ void GenericPlane::SetGenericHistograms(){
     rangeDE[1] * chdEGain + rangeE[1]* chEGain, histBins, rangeDE[0] * chdEGain,
     rangeDE[1] * chdEGain);
 
-  hTDiff = new TH1F("hTDiff", "timeDiff [nsec]; time [nsec] ; count", histBins, 0, 2000 /*rangeTime*/);
+  hTDiff = new TH1F("hTDiff", "timeDiff [nsec]; time [nsec] ; count", 500, 0.5, 1000.5 /*rangeTime*/);
 
   hdEdT = new TH2F("hdEdT", "dE - TOF; TOF [ns]; dE [ch]",
   200,0,200, histBins,rangeDE[0], rangeDE[1]); //rangeT needed

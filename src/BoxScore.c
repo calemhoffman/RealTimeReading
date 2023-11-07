@@ -377,12 +377,12 @@ void EventLoop(){
     }
 
     
-    if (ElapsedTime > updatePeriod && dig->GetAcqMode() == "list") {
+    if (ElapsedTime >= updatePeriod && dig->GetAcqMode() == "list") {
       //if (gp->GetCanvasID() == 2) gp->ClearHistograms();
       //======================== Fill TDiff
       for( int i = 0; i < dig->GetNumRawEvent() - 1; i++){
-        ///~ ULong64_t timeDiff = dig->GetRawTimeStamp(i+1) - dig->GetRawTimeStamp(i);
-        float timeDiff = (float)(dig->GetTimeStamp(i+1) - dig->GetTimeStamp(i));
+        ULong64_t timeDiff = dig->GetRawTimeStamp(i+1) - dig->GetRawTimeStamp(i);
+        //float timeDiff = (float)(dig->GetTimeStamp(i+1) - dig->GetTimeStamp(i));
         ///~ printf("timeDiff: %12.12f \n",timeDiff);
         gp->FillTimeDiff((float)timeDiff * 2.0);
       }
