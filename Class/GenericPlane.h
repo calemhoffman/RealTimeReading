@@ -437,7 +437,7 @@ void GenericPlane::SetGenericHistograms(){
   hTDiff = new TH1F("hTDiff", "timeDiff [nsec]; time [nsec] ; count", histBins, 0, 2000 /*rangeTime*/);
 
   hdEdT = new TH2F("hdEdT", "dE - TOF; TOF [ns]; dE [ch]",
-  200,0,200, histBins,rangeDE[0], rangeDE[1]); //rangeT needed
+  200,0,399, histBins,rangeDE[0], rangeDE[1]); //rangeT needed
 
   hE->GetXaxis()->SetLabelSize(labelSize);
   hE->GetXaxis()->SetNdivisions(405);
@@ -631,10 +631,10 @@ void GenericPlane::Draw(){
     fCanvas->cd(4)->Divide(1,2);
  
     //1D - hdE, hE, htotE, hDt
-    fCanvas->cd(2)->cd(1); hdE->Draw();
-    fCanvas->cd(2)->cd(2); hE->Draw();
-    fCanvas->cd(4)->cd(1); htotE->Draw();
-    fCanvas->cd(4)->cd(2); hTDiff->Draw(); //hdT->Draw();
+    fCanvas->cd(2)->cd(1); hdE->Draw(); hE->SetLineColor(kRed);hE->Draw("same");
+    fCanvas->cd(2)->cd(2); htotE->Draw();//hE->Draw();
+    fCanvas->cd(4)->cd(1); hdEdT->Draw("col");//htotE->Draw();
+    fCanvas->cd(4)->cd(2); hdT->Draw();//hTDiff->Draw(); //
     
     //2D hdEE, hdEtotE, hdEdT 
     fCanvas->cd(1); 

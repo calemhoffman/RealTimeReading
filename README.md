@@ -2,7 +2,7 @@
 
 # BoxScore
 The latest development is focus on Objectization of the program.
-The result is BoxScore. 
+The result is BoxScore.  
 
 The general idea are that
 - All digitizer channel settings should be edited in the setting_*.txt
