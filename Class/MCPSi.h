@@ -58,7 +58,7 @@ MCPSi::MCPSi(){
   chdE = 1;   chdEGain = 1.0;
   mode = 5; ///default channel Gain is equal
   
-  NChannelForRealEvent = 4;
+  NChannelForRealEvent = 2;
   
   //=========== custom histograms for MCPSi
   hX = NULL;
@@ -82,11 +82,11 @@ MCPSi::MCPSi(){
   hYE= NULL;
   
   // set MCP positions from dig channel
-  chX1 = 2; // left 
-  chX2 = 3; // right
+  chX1 = 1;//2; // left 
+  chX2 = 4;//3; // right
   
-  chY1 = 6; // top
-  chY2 = 7; // bottom
+  chY1 = 1;//6; // top
+  chY2 = 4;//7; // bottom
   
   GenericPlane::SetChannelMask(0xffff);
   
@@ -113,7 +113,7 @@ MCPSi::~MCPSi(){
 
 void MCPSi::SetOthersHistograms(){
   
-  int bin = 1000; //2cm / 40 bins = 0.5 mm / bin
+  int bin = 100; //2cm / 40 bins = 0.5 mm / bin
   float labelSize = 0.04;
   
   float xMin = -1.1;
