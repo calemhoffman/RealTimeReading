@@ -530,9 +530,9 @@ int PlaneSetting(string location){
     gp->SetNChannelForRealEvent(2);
   }else if ( location == "crosstime" ) {
     gp = new GenericPlane();
-    gp->SetChannelMask(1,0,0,1,0,0,1,0);
-    gp->SetdEEChannels(1, 4);
-    gp->SetTChannels(7);
+    gp->SetChannelMask(1,1,0,0,0,0,0,1);
+    gp->SetdEEChannels(6, 7);
+    gp->SetTChannels(0);
     gp->SetNChannelForRealEvent(3);
   }else if ( location == "ZD" ) {
     gp = new GenericPlane();
